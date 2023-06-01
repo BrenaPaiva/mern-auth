@@ -1,20 +1,20 @@
 const notFound = (res, req, next) => {
   const error = new Error(`Não encontrado - ${req.originalUrl}`);
-  req.status(404);
+  res.status(404);
   next(error);
 }
 
 const errorHandler = (err, req, res, next) => {
   let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  let message = err.message
+  let message = err.message;
 
   if (err.name === 'CastError' && err.kind === 'ObjectId') {
     statusCode = 404;
     message = "Recurso não foi encontrado"
   }
   res.status(statusCode).json({
-    message,
+    message: message,
     stack: process.env.NODE_ENV === 'production' ? null : err.stack
   })
 }
-export { notFound, errorHandler }
+export { notFound, errorHandler };

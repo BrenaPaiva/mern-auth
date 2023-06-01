@@ -1,9 +1,10 @@
-// import { Jwt } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 import User from "../model/userModel.js";
 
 const protect = asyncHandler(async (req, res, next) => {
   let token;
+
   token = req.cookies.jwt;
   if (token) {
     try {
@@ -12,8 +13,9 @@ const protect = asyncHandler(async (req, res, next) => {
 
       next();
     } catch (e) {
+      console.log(e);
       res.status(401);
-      throw new Error('Token inválido')
+      throw new Error('Token falhou')
     }
 
   } else {
@@ -22,4 +24,4 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 });
 
-export { protect }
+export { protect };

@@ -41,7 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     name,
     email,
-    password
+    password,
   })
 
   if (user) {
@@ -49,13 +49,13 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(201).json({
       _id: user._id,
       name: user.name,
-      email: user.email
-    })
+      email: user.email,
+    });
   } else {
     res.status(400);
     throw new Error('Usuário inválido');
   }
-})
+});
 // @desc Logout user
 //route POST/api/users/logout
 //@access Public 
@@ -63,23 +63,29 @@ const registerUser = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
   res.cookie('jwt', '', {
     httpOnly: true,
-    expires: new Date(0)
+    expires: new Date(0),
   })
 
-  res.status(200).json({ message: 'Usuário logado' })
+  res.json({ message: 'Usuário logado com sucesso!' })
 })
 // @desc Get user profile
-//route POST/api/users/profile
+//route GET/api/users/profile
 //@access Private
 
 const getUserProfile = asyncHandler(async (req, res) => {
-  const user = {
-    _id: req.user._id,
-    name: req.user.name,
-    email: req.user.email
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    })
+  } else {
+    res.status(404);
+    throw new Error('Usuário não encontrado')
   }
 
-  res.status(200).json(user)
 })
 // @desc Update user profile
 //route PUT/api/users/profile
@@ -95,15 +101,15 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       user.password = req.body.password
     }
     const updateUser = await user.save();
-    res.status(200).json({
+    res.json({
       _id: updateUser._id,
       name: updateUser.name,
-      email: updateUser.email
+      email: updateUser.email,
     })
   }
   else {
     res.status(404);
-    throw new Error('User not found')
+    throw new Error('Usuário não encontrado')
   }
   res.status(200).json({ message: 'update user profile' })
 })
@@ -112,5 +118,5 @@ export {
   registerUser,
   logoutUser,
   getUserProfile,
-  updateUserProfile
+  updateUserProfile,
 }
